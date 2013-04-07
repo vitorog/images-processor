@@ -12,6 +12,7 @@ TARGET = images-processor
 TEMPLATE = app
 
 INCLUDEPATH += /media/Vitor/Development/Projects/Github/shade-framework
+INCLUDEPATH += /home/vitor/glm-0.9.4.3/
 
 LIBS += -lGLEW -lGL -lGLU
 
@@ -32,4 +33,8 @@ unix:!macx: LIBS += -L$$PWD/../../shade-framework-build/ -lshade-framework
 INCLUDEPATH += $$PWD/../../shade-framework-build
 DEPENDPATH += $$PWD/../../shade-framework-build
 
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../shade-framework-build/libshade-framework.a
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../shade-framework-build/libshade-framework.so
+
+OTHER_FILES += \
+    basic.vert \
+    basic.frag
