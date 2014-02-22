@@ -5,12 +5,15 @@
 #include "shader_program.h"
 
 #include <QGLWidget>
+#include <QImage>
 
 class ImageRenderer : public QGLWidget
 {
     Q_OBJECT
 public:
     explicit ImageRenderer(QWidget *parent = 0);
+    void LoadImage(const std::string path);
+    void SetImage(QImage);
 protected:
     virtual void initializeGL();
     virtual void paintGL();
@@ -20,7 +23,7 @@ signals:
 public slots:
 private:
     void Initialize();
-    void LoadImage(const std::string path);
+
 
     GLContext gl_context_;
     GLuint vao_handle_;

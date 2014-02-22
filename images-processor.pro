@@ -11,30 +11,27 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = images-processor
 TEMPLATE = app
 
-INCLUDEPATH += /media/Vitor/Development/Projects/Github/shade-framework
-INCLUDEPATH += /home/vitor/glm-0.9.4.3/
+INCLUDEPATH += ../shade-framework
+INCLUDEPATH += /home/vitor/glm/glm-0.9.5.2/glm
 
-LIBS += -lGLEW -lGL -lGLU
+LIBS += -lGLEW -lGL -lGLU -lopencv_core -lopencv_highgui -lopencv_imgproc
 
 SOURCES += main.cpp\
-        main_window.cpp \
-    gl_widget.cpp
+        main_window.cpp \    
+    image_renderer.cpp \
+    webcam_reader.cpp
 
-
-
-HEADERS  += main_window.h \
-    gl_widget.h
-
+HEADERS  += main_window.h \    
+    image_renderer.h \
+    webcam_reader.h
 
 FORMS    += main_window.ui
-
-unix:!macx: LIBS += -L$$PWD/../../shade-framework-build/ -lshade-framework
-
-INCLUDEPATH += $$PWD/../../shade-framework-build
-DEPENDPATH += $$PWD/../../shade-framework-build
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../shade-framework-build/libshade-framework.so
 
 OTHER_FILES += \
     basic.vert \
     basic.frag
+
+unix:!macx: LIBS += -L$$PWD/../Builds/shade-framework-build/ -lshade-framework
+
+INCLUDEPATH += $$PWD/../Builds/shade-framework-build
+DEPENDPATH += $$PWD/../Builds/shade-framework-build

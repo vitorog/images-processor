@@ -1,9 +1,12 @@
 #ifndef MAIN_WINDOW_H
 #define MAIN_WINDOW_H
 
-
-
 #include <QMainWindow>
+#include <QTimer>
+
+#include "webcam_reader.h"
+
+class ImageRenderer;
 
 namespace Ui {
 class MainWindow;
@@ -16,9 +19,13 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    
+public slots:
+    void UpdateImage();
 private:
-    Ui::MainWindow *ui;
+    Ui::MainWindow *ui_;
+    ImageRenderer* image_renderer_;
+    WebcamReader* cam_reader_;
+    QTimer update_timer_;
 };
 
 #endif // MAIN_WINDOW_H

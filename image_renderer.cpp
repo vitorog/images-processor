@@ -1,4 +1,4 @@
-#include "gl_widget.h"
+#include "image_renderer.h"
 
 #include <QImage>
 #include <glm/gtc/matrix_transform.hpp>
@@ -49,12 +49,12 @@ void ImageRenderer::resizeGL(int w, int h)
 void ImageRenderer::Initialize()
 {
     shaders_ = new ShaderProgram();
-    if(shaders_->CompileShaderFromFile("/media/Vitor/Development/Projects/Github/images-processor/basic.vert", kVertexShader)){
+    if(shaders_->CompileShaderFromFile("../../images-processor/basic.vert", kVertexShader)){
         DEBUG_MESSAGE("basic.vert loaded successfully.");
     }else{
         DEBUG_MESSAGE("Failed to load vertex shader.");
     }
-    if(shaders_->CompileShaderFromFile("/media/Vitor/Development/Projects/Github/images-processor/basic.frag", kFragmentShader)){
+    if(shaders_->CompileShaderFromFile("../../images-processor/basic.frag", kFragmentShader)){
         DEBUG_MESSAGE("basic.frag loaded successfully.");
     }else{
         DEBUG_MESSAGE("Failed to load frag shader.");
@@ -116,14 +116,32 @@ void ImageRenderer::Initialize()
     texture_uniform_location_ = glGetUniformLocation(shaders_->GetHandle(), "texture");
 
     glActiveTexture(GL_TEXTURE0);
-    glUniform1i(texture_uniform_location_, 0);
-
-    LoadImage("/media/Vitor/Development/Projects/Github/images-processor/qt.jpg");
+    glUniform1i(texture_uniform_location_, 0);    
 }
 
 void ImageRenderer::LoadImage(const std::string path)
 {
-    QImage texture_img = QGLWidget::convertToGLFormat(QImage(QString::fromStdString(path),"JPG"));
+    QImage texture_img = QGLWidget::convertToGLFormat(QImage(QString::fromStdString(path)));
+    if(texture_id_ != 0){
+        glDeleteTextures(1, &texture_id_);
+    }
+    glGenTextures(1,&texture_id_);
+    glBindTexture(GL_TEXTURE_2D, texture_id_);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture_img.width(),
+                 texture_img.height(), 0, GL_RGBA, GL_UNSIGNED_BYTE, texture_img.bits());
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    this->resize(texture_img.width(),texture_img.height());
+    this->setMaximumHeight(texture_img.height());
+    this->setMinimumHeight(texture_img.height());
+    this->setMaximumWidth(texture_img.width());
+    this->setMinimumWidth(texture_img.width());
+}
+
+void ImageRenderer::SetImage(QImage img)
+{
+    QImage texture_img = QGLWidget::convertToGLFormat(img);
     if(texture_id_ != 0){
         glDeleteTextures(1, &texture_id_);
     }
