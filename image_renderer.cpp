@@ -8,6 +8,7 @@
 ImageRenderer::ImageRenderer(QWidget *parent) :
     QGLWidget(parent)
 {
+
 }
 
 void ImageRenderer::initializeGL()
@@ -15,16 +16,19 @@ void ImageRenderer::initializeGL()
     bool ret = gl_context_.InitGL();
     DEBUG_MESSAGE("OpenGl initialization: " << ret);
     Initialize();
+    emit GlInitialized();
 }
 
 void ImageRenderer::paintGL()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    glUniformMatrix4fv(model_matrix_location_, 1, GL_FALSE, &model_matrix_[0][0]);
-    glUniformMatrix4fv(view_matrix_location_,1,GL_FALSE,&view_matrix_[0][0]);
-    glUniformMatrix4fv(projection_matrix_location_, 1, GL_FALSE, &projection_matrix_[0][0]);
-    glBindVertexArray(vao_handle_);
-    glDrawArrays(GL_TRIANGLES,0,6);
+    if(!shaders_.empty()){
+        glUniformMatrix4fv(model_matrix_location_, 1, GL_FALSE, &model_matrix_[0][0]);
+        glUniformMatrix4fv(view_matrix_location_,1,GL_FALSE,&view_matrix_[0][0]);
+        glUniformMatrix4fv(projection_matrix_location_, 1, GL_FALSE, &projection_matrix_[0][0]);
+        glBindVertexArray(vao_handle_);
+        glDrawArrays(GL_TRIANGLES,0,6);
+    }
 }
 
 void ImageRenderer::resizeGL(int w, int h)
@@ -48,18 +52,6 @@ void ImageRenderer::resizeGL(int w, int h)
 
 void ImageRenderer::Initialize()
 {
-    shaders_ = new ShaderProgram();
-    if(shaders_->CompileShaderFromFile("../../images-processor/basic.vert", kVertexShader)){
-        DEBUG_MESSAGE("basic.vert loaded successfully.");
-    }else{
-        DEBUG_MESSAGE("Failed to load vertex shader.");
-    }
-    if(shaders_->CompileShaderFromFile("../../images-processor/basic.frag", kFragmentShader)){
-        DEBUG_MESSAGE("basic.frag loaded successfully.");
-    }else{
-        DEBUG_MESSAGE("Failed to load frag shader.");
-    }
-    ;
     float width = (float)this->width();
     float height = (float)this->height();
     glViewport(0,0,width,height);
@@ -82,9 +74,6 @@ void ImageRenderer::Initialize()
         0.0f,1.0f
     };
 
-    glBindAttribLocation( shaders_->GetHandle(), 0, "vertex_position");
-    glBindAttribLocation( shaders_->GetHandle(), 1, "vertex_texture_coords");
-
     glGenBuffers(2, &vbo_handle_[0]);
     glBindBuffer(GL_ARRAY_BUFFER, vbo_handle_[0]);
     glBufferData(GL_ARRAY_BUFFER,18*sizeof(float), vertices, GL_STATIC_DRAW);
@@ -103,20 +92,9 @@ void ImageRenderer::Initialize()
     glBindBuffer(GL_ARRAY_BUFFER, vbo_handle_[1]);
     glVertexAttribPointer(1,2, GL_FLOAT, GL_FALSE, 0, (GLubyte*)NULL );
 
-    shaders_->Link();
-    shaders_->Use();
-
     model_matrix_ = glm::mat4(1.0f);
     view_matrix_ = glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,0.0f));
     projection_matrix_ = glm::ortho(0.0f,width, 0.0f, height);
-
-    model_matrix_location_ = glGetUniformLocation(shaders_->GetHandle(), "model_matrix");
-    view_matrix_location_ = glGetUniformLocation(shaders_->GetHandle(), "view_matrix");
-    projection_matrix_location_ = glGetUniformLocation(shaders_->GetHandle(), "projection_matrix");
-    texture_uniform_location_ = glGetUniformLocation(shaders_->GetHandle(), "texture");
-
-    glActiveTexture(GL_TEXTURE0);
-    glUniform1i(texture_uniform_location_, 0);    
 }
 
 void ImageRenderer::LoadImage(const std::string path)
@@ -157,5 +135,30 @@ void ImageRenderer::SetImage(QImage img)
     this->setMinimumHeight(texture_img.height());
     this->setMaximumWidth(texture_img.width());
     this->setMinimumWidth(texture_img.width());
+}
+
+void ImageRenderer::AddShaderProgram(ShaderProgram *sp)
+{
+    shaders_.push_back(sp);
+}
+
+void ImageRenderer::UseShaderProgram(int index)
+{
+    if(index >= 0 && index < shaders_.size()){
+        ShaderProgram* sp = shaders_.at(index);
+        glBindAttribLocation( sp->GetHandle(), 0, "vertex_position");
+        glBindAttribLocation( sp->GetHandle(), 1, "vertex_texture_coords");
+
+        sp->Link();
+        sp->Use();
+
+        model_matrix_location_ = glGetUniformLocation(sp->GetHandle(), "model_matrix");
+        view_matrix_location_ = glGetUniformLocation(sp->GetHandle(), "view_matrix");
+        projection_matrix_location_ = glGetUniformLocation(sp->GetHandle(), "projection_matrix");
+        texture_uniform_location_ = glGetUniformLocation(sp->GetHandle(), "texture");
+
+        glActiveTexture(GL_TEXTURE0);
+        glUniform1i(texture_uniform_location_, 0);
+    }
 }
 

@@ -29,7 +29,9 @@ FORMS    += main_window.ui
 
 OTHER_FILES += \
     basic.vert \
-    basic.frag
+    basic.frag \
+    negative.frag \
+    blur.frag
 
 unix:!macx: LIBS += -L$$PWD/../Builds/shade-framework-build/ -lshade-framework
 

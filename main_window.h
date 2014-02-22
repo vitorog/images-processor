@@ -21,7 +21,11 @@ public:
     ~MainWindow();
 public slots:
     void UpdateImage();
+    void ChangeShader(int index);
+private slots:
+    void LoadShaders();
 private:
+
     Ui::MainWindow *ui_;
     ImageRenderer* image_renderer_;
     WebcamReader* cam_reader_;
