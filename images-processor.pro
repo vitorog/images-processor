@@ -31,7 +31,8 @@ OTHER_FILES += \
     basic.vert \
     basic.frag \
     negative.frag \
-    blur.frag
+    blur.frag \
+    sobel.frag
 
 unix:!macx: LIBS += -L$$PWD/../Builds/shade-framework-build/ -lshade-framework
 
