@@ -17,6 +17,7 @@ public:
     void SetImage(QImage);
     void AddShaderProgram(ShaderProgram*);
     void UseShaderProgram(int index);
+    void ClearAllShaderPrograms();
 protected:
     virtual void initializeGL();
     virtual void paintGL();

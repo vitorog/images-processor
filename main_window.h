@@ -22,6 +22,7 @@ public:
 public slots:
     void UpdateImage();
     void ChangeShader(int index);
+    void ReloadShaders();
 private slots:
     void LoadShaders();
 private:
@@ -30,6 +31,7 @@ private:
     ImageRenderer* image_renderer_;
     WebcamReader* cam_reader_;
     QTimer update_timer_;
+    int current_index_;
 };
 
 #endif // MAIN_WINDOW_H

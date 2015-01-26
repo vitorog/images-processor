@@ -13,7 +13,7 @@ ImageRenderer::ImageRenderer(QWidget *parent) :
 
 ImageRenderer::~ImageRenderer()
 {
-
+    ClearAllShaderPrograms();
 }
 
 void ImageRenderer::initializeGL()
@@ -165,5 +165,16 @@ void ImageRenderer::UseShaderProgram(int index)
         glActiveTexture(GL_TEXTURE0);
         glUniform1i(texture_uniform_location_, 0);
     }
+}
+
+void ImageRenderer::ClearAllShaderPrograms()
+{
+    DEBUG_MESSAGE("Clearing all shader programs.");
+    for(unsigned int i = 0; i < shaders_.size(); i++){
+        shaders_[i]->ClearShaders();
+        glDeleteProgram(shaders_[i]->GetHandle());
+        delete shaders_[i];
+    }
+    shaders_.clear();
 }
 

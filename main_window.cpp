@@ -14,6 +14,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui_->setupUi(this);
     QObject::connect(ui_->actionLoad_image,SIGNAL(triggered()),qApp,SLOT(quit()));
     QObject::connect(ui_->listWidget,SIGNAL(currentRowChanged(int)),this,SLOT(ChangeShader(int)));
+    QObject::connect(ui_->reload_pushButton, SIGNAL(clicked()),this,SLOT(ReloadShaders()));
 
     image_renderer_ = new ImageRenderer();
     QObject::connect(image_renderer_,SIGNAL(GlInitialized()),this,SLOT(LoadShaders()));
@@ -44,10 +45,26 @@ void MainWindow::UpdateImage()
 
 void MainWindow::ChangeShader(int index)
 {
+    current_index_ = index;
     image_renderer_->UseShaderProgram(index);
     image_renderer_->update();
     DEBUG_MESSAGE("Program: " + ui_->listWidget->item(index)->text().toStdString());
 
+}
+
+void MainWindow::ReloadShaders()
+{
+    QObject::disconnect(ui_->listWidget,SIGNAL(currentRowChanged(int)),this,SLOT(ChangeShader(int)));
+    ui_->listWidget->clear();
+    update_timer_.stop();
+    image_renderer_->ClearAllShaderPrograms();
+    LoadShaders();
+    QObject::connect(ui_->listWidget,SIGNAL(currentRowChanged(int)),this,SLOT(ChangeShader(int)));
+    update_timer_.start();
+    if(current_index_ < ui_->listWidget->count()){
+        ui_->listWidget->setCurrentRow(current_index_);
+//        ChangeShader(current_index_);
+    }
 }
 
 void MainWindow::LoadShaders()
