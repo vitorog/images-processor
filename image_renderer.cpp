@@ -11,6 +11,11 @@ ImageRenderer::ImageRenderer(QWidget *parent) :
 
 }
 
+ImageRenderer::~ImageRenderer()
+{
+
+}
+
 void ImageRenderer::initializeGL()
 {
     bool ret = gl_context_.InitGL();

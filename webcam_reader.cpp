@@ -23,6 +23,11 @@ void WebcamReader::GetConvertedFrame(cv::Mat &frame)
     if(cam_.isOpened()){
         cv::Mat original_frame;
         cam_ >> original_frame;
-        cv::cvtColor(original_frame, frame, CV_BGR2RGBA);
+        if(original_frame.data){
+            cv::cvtColor(original_frame, frame, CV_BGR2RGBA);
+        }else{
+            DEBUG_MESSAGE("Failed to get webcam frame.");
+            frame = cv::Mat::zeros(640,480,CV_32FC4);
+        }
     }
 }

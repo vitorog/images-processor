@@ -18,7 +18,7 @@ class MainWindow : public QMainWindow
     
 public:
     explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    ~MainWindow();    
 public slots:
     void UpdateImage();
     void ChangeShader(int index);

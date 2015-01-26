@@ -4,7 +4,7 @@
 #include "gl_context.h"
 #include "shader_program.h"
 
-#include <QGLWidget>
+#include <QtOpenGL/QGLWidget>
 #include <QImage>
 
 class ImageRenderer : public QGLWidget
@@ -12,6 +12,7 @@ class ImageRenderer : public QGLWidget
     Q_OBJECT
 public:
     explicit ImageRenderer(QWidget *parent = 0);
+    ~ImageRenderer();
     void LoadImage(const std::string path);
     void SetImage(QImage);
     void AddShaderProgram(ShaderProgram*);
