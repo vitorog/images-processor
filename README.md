@@ -20,7 +20,9 @@ CMake for project management
 
 # Screenshots
 ![ScreenShot](https://raw.github.com/vitorog/images-processor/master/screenshots/edges.png "Edges Filter")
+
 Edges filter
 
 ![ScreenShot](https://raw.github.com/vitorog/images-processor/master/screenshots/night_vision.png "Night Vision Filter")
+
 Night vision filter
